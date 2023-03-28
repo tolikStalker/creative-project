@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<title>{{title}}</title>
+		<meta charset='utf-8' name='viewport' content='width=device-width'/>
+	</head>
+	<body>
+		<header>
+			{{#if header}}
+			{{> (lookup . 'header') }}
+			 {{^}}
+			 {{> default/nav}}
+			 {{/if}}
+		</header>
+		<main>
+			{{{body}}}
+		</main>
+		<footer>
+			{{#if footer}}
+			{{> (lookup . 'footer') }}
+			 {{^}}
+			 {{> default/footer}}
+			 {{/if}}
+		</footer>
+	</body>
+</html>
