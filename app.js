@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
         title:"1231243214123",
         footer:"page1/footer"
     })
-    //add new func
+    // add new func (modified)
 })
 
 app.get('/profile', (req, res) => {
