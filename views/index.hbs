@@ -1,13 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Main page</title>
-</head>
-<body>
-  <ul className="menu-list">
-    <li><a href="/reg">Registration</a></li>
-    <li><a href="/profile">Profile</a></li>
-  </ul>
-</body>
-</html>
+<script>{{#if sayHello}}alert('You are successfully registration!');{{/if}}
+    {{#if loggined}}alert('You are successfully loggined in!');{{/if}}</script>
+<ul className="menu-list">
+    {{#unless authorized}}
+        <li><a href="/reg">Регистрация</a></li>
+    {{/unless}}
+    {{#if authorized}}
+        <li><a href="/myPosts">Мои объявления</a></li>
+        <li><a href="/profile">Профиль</a></li>
+        <li><a href="/exit">Выйти</a></li>
+    {{/if}}
+</ul>
+<ul className="ads-list">Объявления
+    {{#each listenings}}
+        <li><a href="/listening/{{this.id}}">name: {{this.name}} date: {{this.date}}</a></li>
+    {{/each}}
+</ul>
