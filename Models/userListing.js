@@ -14,5 +14,14 @@ export default db.define("Posts", {
     date: {
         type: DataTypes.DATE,
         allowNull: false
+    },
+    id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
+    },
+    desc: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 }, {timestamps: false})

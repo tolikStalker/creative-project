@@ -17,27 +17,23 @@
                 <br><input type="text" class="form-control" name="login"
                            id="login" placeholder="Логин"
                            minlength="4" maxlength="32" required><br>
-                <input type="text" class="form-control"
-                       id="name" placeholder="Имя" oninput='this.value=this.value.replace(/\W*/gi,"");'
-                       required><br>
                 <input type="password" class="form-control"
-                       id="pass" placeholder="Пароль" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                       name="pass" placeholder="Пароль" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
                        title="at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
                        required><br>
                 <input type="text" class="form-control"
-                       id="name" placeholder="Имя" minlength="2"
+                       name="name" placeholder="Имя" oninput='this.value=this.value.replace(/\W*/gi,"");'
+                       required><br>
+                <input type="text" class="form-control"
+                       name="surname" placeholder="Фамилия" minlength="2"
                        title="хотя бы 2 символа"
                        required><br>
                 <input type="text" class="form-control"
-                       id="surname" placeholder="Фамилия" minlength="2"
+                       name="patronymic" placeholder="Отчество" minlength="2"
                        title="хотя бы 2 символа"
                        required><br>
                 <input type="text" class="form-control"
-                       id="patronymic" placeholder="Отчество" minlength="2"
-                       title="хотя бы 2 символа"
-                       required><br>
-                <input type="text" class="form-control"
-                       id="city" placeholder="Город" minlength="2"
+                       name="city" placeholder="Город" minlength="2"
                        title="хотя бы 2 символа"
                        required><br>
                 <button class="btn btn-success"
@@ -51,9 +47,9 @@
             <h1>Форма Авторизации</h1>
             <form action="/login" method="post">
                 <br><input type="text" class="form-control" name="login"
-                           id="login" placeholder="Введите логин"><br>
+                           placeholder="Введите логин"><br>
                 <input type="password" class="form-control" name="pass"
-                       id="pass" placeholder="Введите пароль"><br>
+                       placeholder="Введите пароль"><br>
                 <button class="btn btn-success"
                         type="submit">Авторизация
                 </button>
