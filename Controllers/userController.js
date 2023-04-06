@@ -16,7 +16,7 @@ const signup = async (req, res) => {
 
         const {login, pass, name, surname, patronymic, city} = req.body
 
-        const username = await User.findOne({where: {userLogin: login}})
+        const username = await User.findByPk(login)
         //if username exist in the database respond with a status of 409
         if (username) {
             return res.status(409).send("username already taken")
@@ -37,7 +37,7 @@ const signup = async (req, res) => {
         if (user) {
             req.session.authorized = true
             req.session.registration = true
-
+            req.session.login = login
             return res.status(201).redirect('/')
         } else {
             return res.status(409).send("Details are not correct")
@@ -53,7 +53,7 @@ const login = async (req, res) => {
     try {
         const {login, pass} = req.body
         //find a user by their email
-        const user = await User.findOne({where: {userLogin: login}})
+        const user = await User.findByPk(login)
         //if user email is found, compare password with bcrypt
         if (user) {
             if (await bcrypt.compare(pass, user.userPassword) === true) {
@@ -65,6 +65,7 @@ const login = async (req, res) => {
                 //send user data
                 req.session.authorized = true
                 req.session.loggined = true
+                req.session.login = login
                 return res.status(200).redirect('/')
             } else return res.status(401).json({success: false, message: 'Passwords do not match'})
         } else
@@ -75,13 +76,4 @@ const login = async (req, res) => {
     }
 }
 
-const getUsers = async () => {
-    try {
-        const users = await User.findAll()
-        console.log(JSON.stringify(users))
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-export {signup, login, getUsers}
+export {signup, login}

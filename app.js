@@ -1,11 +1,13 @@
-import express, {json, Router} from 'express'
+import express from 'express'
 import cookieParser from 'cookie-parser'
 import db from './Models/database.js'
 import authRoutes from './Routes/userRoutes.js'
-//import path from 'path';
-import expressHandlebars from "express-handlebars";
-import session from 'express-session';
-import {getListenings, getListeningById} from "./listenLoader.js";
+import expressHandlebars from "express-handlebars"
+import session from 'express-session'
+import {getListenings, getListeningById, getMyListening} from "./Loaders/listenLoader.js"
+import {getUser} from "./Loaders/userLoader.js"
+//import path from 'path'
+
 
 //const __dirname = path.resolve();
 
@@ -30,7 +32,7 @@ app.use(session({
     resave: false, // Force save of session for each request.
     saveUninitialized: false, // Save a session that is new, but has not been modified
     cookie: {maxAge: 120_000}
-}));
+}))
 
 //middleware
 app.use(express.json())
@@ -38,11 +40,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 
 //checking if connection is done
-db.authenticate().then(() => {
-    console.log(`Database connected!`)
-}).catch((err) => {
-    console.log(err)
-})
+db.authenticate().then(() => console.log(`Database connected!`)).catch((err) => console.log(err))
 
 //synchronizing the database and forcing it to false, so we don't lose data
 // await db.sync({force: true}).then(() => {
@@ -55,26 +53,38 @@ app.use('/', authRoutes)
 app.get('/', async (req, res) => {
     await getListenings()
         .then(result => {
-            const context = {
-                listenings: result.map(document => {
-                    return {
-                        name: document.name,
-                        date: document.date,
-                        id: document.id,
+                if (result !== undefined) {
+                    const context = {
+                        listenings: result.map(document => {
+                            return {
+                                name: document.name,
+                                date: document.date,
+                                id: document.id,
+                            }
+                        })
                     }
-                })
-            }
 
-            res.render('index', {
-                //header: "page1/nav",
-                //title: "1231243214123",
-                //footer: "page1/footer",
-                sayHello: req.session.registration,
-                loggined: req.session.loggined,
-                listenings: context.listenings,
-                authorized: req.session.authorized,
-            })
-        })
+                    res.render('index', {
+                        //header: "page1/nav",
+                        //title: "1231243214123",
+                        //footer: "page1/footer",
+                        sayHello: req.session.registration,
+                        loggined: req.session.loggined,
+                        listenings: context.listenings,
+                        authorized: req.session.authorized,
+                    })
+                } else {
+                    res.render('index', {
+                        //header: "page1/nav",
+                        //title: "1231243214123",
+                        //footer: "page1/footer",
+                        sayHello: req.session.registration,
+                        loggined: req.session.loggined,
+                        authorized: req.session.authorized,
+                    })
+                }
+            }
+        )
     delete req.session.registration
     delete req.session.loggined
 })
@@ -82,18 +92,8 @@ app.get('/', async (req, res) => {
 app.get('/listening/:id', async (req, res) => {
     await getListeningById(req.params.id)
         .then(result => {
-            const context = {
-                listening: {
-                    name: result.name,
-                    date: result.date,
-                    desc: result.desc,
-                    id: result.id,
-                    owner: result.owner,
-                }
-            }
-
             res.render('listnening', {
-                listening: context.listening
+                listening: result.dataValues
             })
         })
 })
@@ -101,24 +101,67 @@ app.get('/listening/:id', async (req, res) => {
 app.get('/exit', (req, res, next) => {
     req.session.authorized = false
     req.session.user = null
-    req.session.save(function (err) {
+    req.session.save(err => {
         if (err) next(err)
-        //
-        // // regenerate the session, which is good practice to help
-        // // guard against forms of session fixation
-        req.session.regenerate(function (err) {
+        // regenerate the session, which is good practice to help
+        // guard against forms of session fixation
+        req.session.regenerate(err => {
             if (err) next(err)
             res.redirect('/')
         })
     })
 })
 
-app.get('/profile', (req, res) => {
-    res.render('profile')
+app.get('/profile/:id', async (req, res) => {
+    await getUser(req.params.id)
+        .then(result => {
+            res.render('viewProfile', {
+                user: result.dataValues,
+                authorized: req.session.authorized
+            })
+        })
+})
+
+app.get('/editProfile', (req, res) => {
+    if (req.session.authorized)
+        res.render('editProfile')
+    else
+        res.redirect('/auth')
+})
+
+app.get('/myListenings', async (req, res) => {
+    await getMyListening(req.session.login)
+        .then(result => {
+            if (result !== undefined) {
+                const context = {
+                    listenings: result.map(document => {
+                        return {
+                            name: document.name,
+                            date: document.date,
+                            id: document.id,
+                        }
+                    })
+                }
+
+                res.render('myListenings', {
+                    listenings: context.listenings,
+                })
+            } else {
+                res.render('myListenings')
+            }
+        })
 })
 
 app.get('/reg', (req, res) => {
     res.render('registration')
+})
+
+app.get('/myProfile', (req, res) => {
+    res.redirect('/profile/' + req.session.login)
+})
+
+app.get('/postListening', (req, res) => {
+    res.render('postListening')
 })
 
 app.get('*', (req, res) => {

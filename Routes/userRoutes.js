@@ -1,6 +1,7 @@
 import {Router} from 'express'
-import {signup, login, getUsers} from '../Controllers/userController.js'
+import {signup, login} from '../Controllers/userController.js'
 import {check} from "express-validator"
+import {addListening, deleteListening} from "../Controllers/listenController.js";
 
 const router = Router()
 
@@ -18,6 +19,11 @@ router.post('/signup', [
 //login route
 router.post('/login', login)
 
-router.get('/users', getUsers)
+router.post('/postListening', [check('name', 'longer than 2 characters and shorter 32 chars!')
+    .isLength({min: 2, max: 32}),
+    check('description', 'longer than 2 characters and shorter 1024 chars!').isLength({min: 2, max: 1024}),
+    addListening])
+
+router.post('/deletePost', deleteListening)
 
 export default router

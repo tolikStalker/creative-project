@@ -1,6 +1,7 @@
-import {DataTypes} from 'sequelize'
+import {DataTypes, Sequelize} from 'sequelize'
 import db from './database.js'
 
+const timezone = 3;
 export default db.define("Posts", {
     name: {
         type: DataTypes.CHAR(32),
@@ -13,12 +14,14 @@ export default db.define("Posts", {
     },
     date: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
+        defaultValue: Date.now()+timezone*60*60*1000
     },
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
     },
     desc: {
         type: DataTypes.STRING,
