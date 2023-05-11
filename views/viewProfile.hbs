@@ -51,11 +51,19 @@
                                value="{{user.userLogin}}"></div>
                 </div>
                 {{#if authorized}}
-                    <div class="mt-5 text-center">
-                        <button class="btn btn-primary profile-button" type="button"
-                                onclick="document.location = '/editProfile'">Редактировать
-                        </button>
-                    </div>
+                    {{#if  isMyProfile}}
+                        <div class="mt-5 text-center">
+                            <button class="btn btn-primary profile-button" type="button"
+                                    onclick="document.location = '/editProfile'">Редактировать
+                            </button>
+                        </div>
+                        <form action="/deleteProfile" method="post">
+                            <div class="mt-5 text-center">
+                                <button class="btn btn-primary profile-button" type="submit">Удалить профиль
+                                </button>
+                            </div>
+                        </form>
+                    {{/if}}
                 {{/if}}
             </div>
         </div>

@@ -26,5 +26,9 @@ export default db.define("users", {
     city: {
         type: DataTypes.CHAR(32),
         allowNull: false
+    },
+    birthDate: {
+        type: DataTypes.DATE,
+        allowNull: false
     }
 }, {timestamps: false})

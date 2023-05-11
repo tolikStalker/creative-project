@@ -75,9 +75,6 @@ app.get('/', async (req, res) => {
                     })
                 } else {
                     res.render('index', {
-                        //header: "page1/nav",
-                        //title: "1231243214123",
-                        //footer: "page1/footer",
                         sayHello: req.session.registration,
                         loggined: req.session.loggined,
                         authorized: req.session.authorized,
@@ -115,16 +112,34 @@ app.get('/exit', (req, res, next) => {
 app.get('/profile/:id', async (req, res) => {
     await getUser(req.params.id)
         .then(result => {
+            if(result==null)
+            { res.render("notExistingPage.hbs");}
+            else{
+            for (var key in result.dataValues) {
+                if (result.dataValues[key])
+                    result.dataValues[key] = result.dataValues[key].trim()
+            }
             res.render('viewProfile', {
                 user: result.dataValues,
-                authorized: req.session.authorized
+                authorized: req.session.authorized,
+                isMyProfile: req.params.id === req.session.login
             })
-        })
+        }})
+
 })
 
-app.get('/editProfile', (req, res) => {
+app.get('/editProfile', async (req, res) => {
     if (req.session.authorized)
-        res.render('editProfile')
+        await getUser(req.session.login)
+            .then(result => {
+                for (var key in result.dataValues) {
+                    if (result.dataValues[key])
+                        result.dataValues[key] = result.dataValues[key].trim()
+                }
+                res.render('editProfile', {
+                    user: result.dataValues
+                })
+            })
     else
         res.redirect('/auth')
 })

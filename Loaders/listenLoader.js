@@ -1,4 +1,4 @@
-import userListing from "../Models/userListing.js";
+import userListing from "../Models/ListingModel.js";
 
 export async function getListenings() {
     return await userListing.findAll().catch(e => console.log(e))

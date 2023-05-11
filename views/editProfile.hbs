@@ -23,49 +23,50 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="text-right">Profile Settings</h4>
                 </div>
-                <div class="row mt-3">
+                <form action="/saveProfile" method="post">
                     <div class="row mt-3">
-                        <div class="col-md-6"><label class="labels">Name</label>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Имя"
-                                   value="{{user.name}}">
+                        <div class="row mt-3">
+                            <div class="col-md-6"><label class="labels">Name</label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Имя"
+                                       name="name"
+                                       value="{{user.name}}">
+                            </div>
+                            <div class="col-md-6"><label class="labels">Surname</label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Фамилия"
+                                       name="surname"
+                                       value="{{user.surname}}">
+                            </div>
+                            <div class="col-md-6"><label class="labels">Patronymic</label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Отчество"
+                                       name="patronymic"
+                                       value="{{user.patronymic}}">
+                            </div>
                         </div>
-                        <div class="col-md-6"><label class="labels">Surname</label>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Фамилия"
-                                   value="{{user.surname}}">
+                        <div class="row mt-3">
+                            <div class="col-md-12"><label class="labels">City</label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Город"
+                                       name="city"
+                                       value="{{user.city}}"></div>
                         </div>
-                        <div class="col-md-6"><label class="labels">Patronymic</label>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Отчество"
-                                   value="{{user.patronymic}}">
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12"><label class="labels">City</label>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Город"
-                                   value="{{user.city}}"></div>
-                        <div class="col-md-12"><label class="labels">Email</label>
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Email"
-                                   value="{{user.login}}"></div>
-                    </div>
-                    <div class="mt-5 text-center">
-                        <button class="btn btn-primary profile-button" type="button">Save Profile</button>
-                        <button class="btn btn-primary profile-button" type="button"
-                                onclick="document.location = '/viewProfile'">Cancel
-                        </button>
-                    </div>
-                </div>
+                        <div class="mt-5 text-center">
+                            <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
+                            <button class="btn btn-primary profile-button" type="reset"
+                                    onclick="document.location = '/profile/{{user.userLogin}}'">Cancel
+                            </button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+</div>
 </div>
 </body>
 </html>

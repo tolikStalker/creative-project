@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import {signup, login} from '../Controllers/userController.js'
+import {signup, login, deleteProfile,updateProfile} from '../Controllers/userController.js'
 import {check} from "express-validator"
 import {addListening, deleteListening} from "../Controllers/listenController.js";
 
@@ -25,5 +25,15 @@ router.post('/postListening', [check('name', 'longer than 2 characters and short
     addListening])
 
 router.post('/deletePost', deleteListening)
+
+router.post('/deleteProfile', deleteProfile)
+
+router.post('/saveProfile', [
+    check('name', 'bigger than 2 characters!').isLength({min: 2, max: 32}),
+    check('surname', 'bigger than 2 characters!').isLength({min: 2, max: 32}),
+    check('patronymic', 'bigger than 2 characters!').isLength({min: 2, max: 32}),
+    check('city', 'bigger than 2 characters!').isLength({min: 2, max: 32}),
+    updateProfile
+])
 
 export default router
