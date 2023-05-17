@@ -1,0 +1,42 @@
+<p>редактировать объявление</p>
+<title>редактировать объявление</title>
+<body>
+<div>
+    <form action="/editPost" method="post">
+        <div class="col-md-12"><label class="labels">Название</label>
+            <label class="labels"><input type="text"
+                                         class="form-control"
+                                         name="name"
+                                         value="{{listening.name}}"
+                                         minlength="2" maxlength="32"
+                                         required
+            ></label></div>
+        <div class="col-md-12"><label class="labels">Описание</label>
+            <label class="labels"><input type="text"
+                                         class="form-control"
+                                         value="{{listening.description}}"
+                                         name="description"
+            ></label></div>
+        <div class="col-md-12"><label class="labels">Цена, p</label>
+            <label class="labels"><input type="number"
+                                         class="form-control"
+                                         value="{{listening.price}}"
+                                         name="price"
+            ></label></div>
+        <div class="col-md-12"><label class="labels">Количество человек</label>
+            <label class="labels"><input type="number"
+                                         class="form-control"
+                                         value="{{listening.worker_count}}"
+                                         name="worker_count"
+            ></label></div>
+        <div class="col-md-12"><label class="labels">Опыт</label>
+            <label class="labels"><input type="number"
+                                         class="form-control"
+                                         value="{{listening.practice}}"
+                                         name="practice"
+            ></label></div>
+        <button class="btn btn-success" type="submit">подтвердить изменения</button>
+        <button class="btn btn-success" type="reset" onclick="document.location='/myListenings'">Назад</button>
+    </form>
+</div>
+</body>

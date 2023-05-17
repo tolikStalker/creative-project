@@ -1,0 +1,15 @@
+<ul className="ads-list">Мои объявления
+    {{#unless listenings}}
+        <p>Здесь пока пусто!</p>
+    {{/unless}}
+    {{#each listenings}}
+        <li><a href="/listening/{{this.id}}">name: {{this.name}} date: {{this.date}} <b>{{this.price}} p</b></a></li>
+        <button type="submit" onclick="document.location = '/edit/listening/{{this.id}}'">Редактировать объявление
+        </button>
+        <form action="/deletePost" method="post">
+            <input type="hidden" value="{{this.id}}" name="id">
+            <button type="submit">Удалить объявление</button>
+        </form>
+    {{/each}}
+    <button onclick="document.location='/postListening'">Выстави объявление!!</button>
+</ul>

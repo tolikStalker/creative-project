@@ -1,0 +1,13 @@
+<ul>
+    <li>id: {{listening.id}}</li>
+    <li>name: {{listening.name}} </li>
+    <li>date: {{listening.date}}</li>
+    <li>owner: <a href="/profile/{{listening.owner}}">{{listening.owner}}</a></li>
+    {{#if listening.price}}
+        <li>цена: {{listening.price}} p</li>
+    {{/if}}
+    <li>количество работников: {{listening.worker_count}}</li>
+    <li>опыт работы: {{listening.practice}}</li>
+    <li>статус объявления: {{listening.status}}</li>
+    <li>desc: {{listening.desc}}</li>
+</ul>

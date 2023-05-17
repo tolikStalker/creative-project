@@ -3,32 +3,52 @@ import db from './database.js'
 
 export default db.define("users", {
     userLogin: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         primaryKey: true,
         allowNull: false
     },
     userPassword: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: false
     },
     name: {
-        type: DataTypes.CHAR(32),
+        type: DataTypes.STRING(32),
         allowNull: false
     },
     surname: {
-        type: DataTypes.CHAR(32),
+        type: DataTypes.STRING(32),
         allowNull: false
     },
     patronymic: {
-        type: DataTypes.CHAR(32),
-        allowNull: false
+        type: DataTypes.STRING(32),
+        allowNull: true
     },
     city: {
-        type: DataTypes.CHAR(32),
+        type: DataTypes.STRING(32),
         allowNull: false
     },
-    birthDate: {
+    birth_date: {
         type: DataTypes.DATE,
+        allowNull: true
+    },
+    education: {
+        type: DataTypes.STRING(1024),
         allowNull: false
-    }
+    },
+    phone_number: {
+        type: DataTypes.STRING(12),
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING(64),
+        allowNull: false
+    },
+    specialization: {
+        type: DataTypes.STRING(128),
+        allowNull: false
+    },
+    gender: {
+        type: DataTypes.CHAR(1),
+        allowNull: false
+    },
 }, {timestamps: false})

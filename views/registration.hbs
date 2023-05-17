@@ -7,35 +7,48 @@
     <title>Авторизация</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
 </head>
-</head>
 <body>
 <div class="container mt-4">
     <div class="row">
         <div class="col">
             <h1>Форма регистрации</h1>
             <form action="/signup" method="post" name="reg">
-                <br><input type="text" class="form-control" name="login"
-                           id="login" placeholder="Логин"
-                           minlength="4" maxlength="32" required><br>
-                <input type="password" class="form-control"
-                       name="pass" placeholder="Пароль" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                       title="at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                       required><br>
-                <input type="text" class="form-control"
-                       name="name" placeholder="Имя" oninput='this.value=this.value.replace(/\W*/gi,"");'
-                       required><br>
-                <input type="text" class="form-control"
-                       name="surname" placeholder="Фамилия" minlength="2"
-                       title="хотя бы 2 символа"
-                       required><br>
-                <input type="text" class="form-control"
-                       name="patronymic" placeholder="Отчество" minlength="2"
-                       title="хотя бы 2 символа"
-                       required><br>
-                <input type="text" class="form-control"
-                       name="city" placeholder="Город" minlength="2"
-                       title="хотя бы 2 символа"
-                       required><br>
+                <br><label class="labels"><input type="text" class="form-control" name="login"
+                                  id="login" placeholder="Логин"
+                                  minlength="4" maxlength="32" required><br></label>
+                <label class="labels"><input type="password" class="form-control"
+                              name="pass" placeholder="Пароль" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                              title="at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                              required><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="name" placeholder="Имя" oninput='this.value=this.value.replace(/\W*/gi,"");'
+                              required><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="surname" placeholder="Фамилия" minlength="2"
+                              title="хотя бы 2 символа"
+                              required><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="patronymic" placeholder="Отчество" minlength="2"
+                              title="хотя бы 2 символа"
+                ><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="city" placeholder="Город"
+                ><br></label>
+                <label class="labels"><input type="date" class="form-control"
+                              name="date" minlength="2"
+                ><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="education" placeholder="образование"
+                ><br></label>
+                <label class="labels"><input type="number" class="form-control"
+                              name="phone_number" placeholder="номер телефона"
+                ><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="email" placeholder="email"
+                ><br></label>
+                <label class="labels"><input type="text" class="form-control"
+                              name="specialization" placeholder="специальность"
+                ><br></label>
                 <button class="btn btn-success"
                         type="submit">Регистрация
                 </button>
@@ -46,10 +59,10 @@
         <div class="col">
             <h1>Форма Авторизации</h1>
             <form action="/login" method="post">
-                <br><input type="text" class="form-control" name="login"
-                           placeholder="Введите логин"><br>
-                <input type="password" class="form-control" name="pass"
-                       placeholder="Введите пароль"><br>
+                <br><label><input type="text" class="form-control" name="login"
+                                  placeholder="Введите логин"><br></label>
+                <label><input type="password" class="form-control" name="pass"
+                              placeholder="Введите пароль"><br></label>
                 <button class="btn btn-success"
                         type="submit">Авторизация
                 </button>

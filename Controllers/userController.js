@@ -4,6 +4,7 @@ import {validationResult} from "express-validator"
 
 const salt = 10
 
+
 function authorized(req, login, register) {
     req.session.authorized = true
     req.session.loggined = !register
@@ -13,7 +14,7 @@ function authorized(req, login, register) {
 
 //signing a user up
 //hashing users password before its saved to the database with bcrypt
-const signup = async (req, res) => {
+export const signup = async (req, res) => {
     try {
         const errors = validationResult(req)
 
@@ -21,25 +22,15 @@ const signup = async (req, res) => {
             return res.status(400).json('Registration error!', errors)
         }
 
-        const {login, pass, name, surname, patronymic, city} = req.body
-
-        const username = await User.findByPk(login)
+        const username = await User.findByPk(req.body.login)
         //if username exist in the database respond with a status of 409
         if (username) {
             return res.status(409).send("username already taken")
         }
 
         //saving the user
-        const user = await User.create({
-            userLogin: login,
-            userPassword: await bcrypt.hash(pass, salt),
-            name: name,
-            surname: surname,
-            patronymic: patronymic,
-            city: city
-        }).then(() => console.log('successfully created account ' + name))
+        const user = await User.create(req.body).then(() => console.log('successfully created account ' + name))
         //if user details is captured
-        //generate token with the user's id and the secretKey in the env file
         // set cookie with the token generated
         if (user) {
             authorized(req, login, true)
@@ -54,7 +45,7 @@ const signup = async (req, res) => {
 }
 
 //login authentication
-const login = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const {login, pass} = req.body
         //find a user by their email
@@ -77,31 +68,23 @@ const login = async (req, res) => {
     }
 }
 
-const deleteProfile = async (req, res) => {
+export const deleteProfile = async (req, res) => {
     try {
-        res.status(200).redirect('/exit')
-        await User.destroy({where: {userLogin: req.session.login}}).then(() => {
-            console.log('profile deleted ')
+        await User.destroy({where: {userLogin: req.session.login}}).then((user) => {
+            console.log('profile deleted ' + user)
+            return res.status(200).redirect('/exit')
         })
-        //return res.status(200)
-    } catch
-        (e) {
+    } catch (e) {
         console.log(e)
         res.status(400).json({message: 'delete account error!'})
     }
 }
 
-const updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
     try {
-        const {city, surname, patronymic, name} = req.body
         const user = await User.findByPk(req.session.login)
         if (user) {
-            await user.update({
-                name: name,
-                surname: surname,
-                patronymic: patronymic,
-                city: city
-            })
+            await user.update(req.body)
                 .then(() => console.log('successfully updated account ' + name))
             return res.status(200).redirect('/myProfile')
         } else return res.status(401).send('user update error!')
@@ -110,5 +93,3 @@ const updateProfile = async (req, res) => {
         res.status(400).json({message: 'update profile error!'})
     }
 }
-
-export {signup, login, deleteProfile, updateProfile}

@@ -89,8 +89,17 @@ app.get('/', async (req, res) => {
 app.get('/listening/:id', async (req, res) => {
     await getListeningById(req.params.id)
         .then(result => {
-            res.render('listnening', {
+            res.render('listenings/listnening', {
                 listening: result.dataValues
+            })
+        })
+})
+
+app.get('/edit/listening/:id', async (req, res) => {
+    await getListeningById(req.params.id)
+        .then(result => {
+            res.render('listenings/editListnening', {
+                listening: result
             })
         })
 })
@@ -112,31 +121,32 @@ app.get('/exit', (req, res, next) => {
 app.get('/profile/:id', async (req, res) => {
     await getUser(req.params.id)
         .then(result => {
-            if(result==null)
-            { res.render("notExistingPage.hbs");}
-            else{
-            for (var key in result.dataValues) {
-                if (result.dataValues[key])
-                    result.dataValues[key] = result.dataValues[key].trim()
-            }
-            res.render('viewProfile', {
-                user: result.dataValues,
-                authorized: req.session.authorized,
-                isMyProfile: req.params.id === req.session.login
-            })
-        }})
-
-})
-
-app.get('/editProfile', async (req, res) => {
-    if (req.session.authorized)
-        await getUser(req.session.login)
-            .then(result => {
-                for (var key in result.dataValues) {
+            if (result == null) {
+                res.render("notExistingPage.hbs")
+            } else {
+                for (const key in result.dataValues) {
                     if (result.dataValues[key])
                         result.dataValues[key] = result.dataValues[key].trim()
                 }
-                res.render('editProfile', {
+                res.render('profile/viewProfile', {
+                    user: result.dataValues,
+                    authorized: req.session.authorized,
+                    isMyProfile: req.params.id === req.session.login
+                })
+            }
+        })
+
+})
+
+app.get('/edit/profile', async (req, res) => {
+    if (req.session.authorized)
+        await getUser(req.session.login)
+            .then(result => {
+                for (const key in result.dataValues) {
+                    if (result.dataValues[key])
+                        result.dataValues[key] = result.dataValues[key].trim()
+                }
+                res.render('profile/editProfile', {
                     user: result.dataValues
                 })
             })
@@ -158,11 +168,11 @@ app.get('/myListenings', async (req, res) => {
                     })
                 }
 
-                res.render('myListenings', {
+                res.render('listenings/myListenings', {
                     listenings: context.listenings,
                 })
             } else {
-                res.render('myListenings')
+                res.render('listenings/myListenings')
             }
         })
 })
@@ -176,7 +186,7 @@ app.get('/myProfile', (req, res) => {
 })
 
 app.get('/postListening', (req, res) => {
-    res.render('postListening')
+    res.render('listenings/postListening')
 })
 
 app.get('*', (req, res) => {

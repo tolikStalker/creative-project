@@ -1,16 +1,28 @@
 import userListing from "../Models/ListingModel.js";
+import {status} from "../statusList.js";
 
-const addListening = async (req, res) => {
+export const addListening = async (req, res) => {
     try {
-        const {name, description, login} = req.body
-        await userListing.create({
+        const {name, description, price, worker_count, practice} = req.body
+        const a = {
             name: name,
-            desc: description,
+            status: status.start,
             owner: req.session.login,
-        }).then(() =>
-            console.log('Successfully created listening by ' + req.session.login)
+            description: description,
+            price: price,
+            worker_count: worker_count,
+            practice: practice
+        }
+        for(let key in a)
+            if(a[key]==='')
+                delete a[key]
+
+        const listen = await userListing.create(a)
+
+        await listen.save().then((listen) =>
+            console.log('Created listening ' + listen.id + ' by ' + req.session.login)
         )
-        req.session.secCreated = true
+        //req.session.secCreated = true
         return res.status(201).redirect('/')
     } catch (e) {
         console.log(e)
@@ -18,16 +30,15 @@ const addListening = async (req, res) => {
     }
 }
 
-const editListening = async (req, res) => {
+export const editListening = async (req, res) => {
     try {
-        const {name, description, id} = req.body
-        await userListing.update({
-                name: name,
-                desc: description
-            },
+        await userListing.update(req.body,
             {
-                where: {id: id}
+                where: {id: req.body.id}
             })
+            .then((listen) =>
+                console.log('updated listening ' + listen.id + ' by ' + req.session.login)
+            )
         return res.status(201).redirect('/')
     } catch (e) {
         console.log(e)
@@ -35,7 +46,7 @@ const editListening = async (req, res) => {
     }
 }
 
-const deleteListening = async (req, res) => {
+export const deleteListening = async (req, res) => {
     try {
         await userListing.destroy({where: {id: req.body.id}})
             .then(() =>
@@ -46,5 +57,3 @@ const deleteListening = async (req, res) => {
         res.status(400).send('Delete listening error')
     }
 }
-
-export {addListening, editListening, deleteListening}
