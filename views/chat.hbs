@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO chat</title>
+</head>
+<body>
+
+<h3>Форма сообщений</h3>
+<form id="messForm">
+    <label for="name">Имя</label>
+    <input type="hidden" name="name" id="name" value="{{sender}}" class="form-control">
+    <br>
+    <input type="hidden" name="receiver" id="receiver" value="{{receiver}}" class="form-control">
+    <br>
+    <label for="message">Сообщение</label>
+    <textarea name="message" id="message" class="form-control" placeholder="Введите сообщение"></textarea>
+    <br>
+    <input type="submit" value="Отправить" class="btn btn-danger">
+</form>
+    <div>
+        <h3>Сообщения</h3>
+        <!-- Вывод всех сообщений будет здесь -->
+        <div id="all_mess"></div>
+    </div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    const messages = document.getElementById('all_mess');
+    const form = document.getElementById('messForm');
+    const input = document.getElementById('message');
+    const name = document.getElementById('name');
+    const receiver = document.getElementById('receiver');
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        socket.emit('send mess',{mess: input.value, sender: name.value,receiver:receiver.value});
+        input.value = "";
+    });
+
+    socket.on('add mess', (msg) => {
+        const item = document.createElement('li');
+        item.textContent = msg.sender+":"+msg.mess;
+        messages.append(item);
+    });
+
+    socket.on('message', (msg) => {
+        const item = document.createElement('li');
+        item.textContent = msg.sender+":"+msg.mess;
+        messages.append(item);
+    });
+
+    socket.on("clear",()=>{
+        messages.innerHTML = '';
+    })
+
+</script>
+</body>
+</html>

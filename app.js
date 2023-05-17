@@ -7,7 +7,9 @@ import session from 'express-session'
 import {getListenings, getListeningById, getMyListening} from "./Loaders/listenLoader.js"
 import {getUser} from "./Loaders/userLoader.js"
 //import path from 'path'
-
+import {Server} from 'socket.io';
+import {addChat, getChat} from "./Controllers/chatcontrol.js"
+//import {render} from "express/lib/application.js";
 
 //const __dirname = path.resolve();
 
@@ -21,6 +23,11 @@ const PORT = process.env.PORT ?? 8080
 
 //assigning the variable app to express
 const app = express()
+
+const server = app.listen(3000, () => {
+});
+
+const io = new Server(server);
 
 app.engine('hbs', handlebars.engine)
 app.set('view engine', 'hbs')
@@ -187,6 +194,58 @@ app.get('/myProfile', (req, res) => {
 
 app.get('/postListening', (req, res) => {
     res.render('listenings/postListening')
+})
+
+let sender;
+let receiver;
+io.on('connection', async(socket) => {
+    console.log('user connected');
+
+   async function  get_content() {
+       socket.emit("clear");
+       const content = await getChat(sender, receiver);
+       if (content != null) {
+           for (let i = 0; content.length > i; i += 1) {
+               let msg={sender:content[i].sender,mess:content[i].message};
+               socket.emit("add mess",msg);
+               }
+       }
+   }
+   async function reload(){
+       setTimeout(get_content,1000);
+       setTimeout(reload,5000);
+   }
+
+    setTimeout(reload,1);
+
+    socket.on('send mess', async(msg) => {
+        addChat(msg.sender,msg.receiver, msg.mess);
+        socket.emit('add mess',msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+});
+
+app.use('/chat/:id', (req, res) => {
+    if (req.rawHeaders[1] !== "localhost:3000") {
+        res.redirect("http://localhost:3000/chat/"+(req.body.owner).toString());
+    } else {
+        sender=req.session.login;
+        receiver=req.params.id;
+        if(sender != receiver & sender!=null & receiver != null)
+        {
+            res.render("chat", {
+                name: sender,
+                receiver: receiver
+            });
+        }
+        else{
+            res.render("notExistingPage");
+        }
+    }
 })
 
 app.get('*', (req, res) => {
