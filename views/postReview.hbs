@@ -1,8 +1,15 @@
-<title>Отзыв</title>
+<head>
+    <title>Отзыв</title>
+</head>
 <form method="post" action="/createReview">
-    <li>
-        <input type="number" max="5" name="rate" placeholder="оценка">
-        <input type="number" name="comment" placeholder="комментарий">
-    </li>
+    <label>
+        <input type="number" max="5" min="0" name="rate" placeholder="оценка">
+    </label>
+    <label>
+        <input type="text" name="comment" placeholder="комментарий">
+    </label>
+    <label>
+        <input type="hidden" name="target" value="{{target}}">
+    </label>
     <button type="submit">Отправить отзыв</button>
 </form>

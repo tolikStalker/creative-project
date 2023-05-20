@@ -3,15 +3,22 @@ import Review from '../Models/reviewModel.js'
 export const createReview = async (req, res) => {
     try {
         const {comment, rate, target} = req.body
-        let review = await Review.findOne({where: {target: target}})
+        let review = await Review.findOne(
+            {
+                where: {
+                    target: target
+                }
+            }
+        )
         if (!review) {
-            review = await Review.create({
-                rate: rate,
-                comment: comment,
-                author: req.session.login,
-                target: req.params.id
-            })
-            return res.status(200)
+            await Review.create({
+                    rate: rate,
+                    comment: comment,
+                    author: req.session.login,
+                    target: target
+                }
+            )
+            return res.status(200).redirect(`/profile/${target}`)
         } else {
             return res.status(409).send("review already exists!")
         }
@@ -36,17 +43,21 @@ export const deleteReview = async (req, res) => {
 export const editReview = async (req, res) => {
     try {
         const {rate, comment} = req.body
-        const review = Review.findOne({
-            where: {
-                author: req.session.login,
-                target: req.params.id
+        const review = Review.findOne(
+            {
+                where: {
+                    author: req.session.login,
+                    target: req.params.id
+                }
             }
-        })
+        )
         if (review) {
-            await review.update({
-                rate: rate,
-                comment: comment
-            })
+            await review.update(
+                {
+                    rate: rate,
+                    comment: comment
+                }
+            )
                 .then(() => console.log('successfully updated review ' + review.id))
             return res.status(200)
         } else return res.status(401).send('review update error!')

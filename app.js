@@ -5,11 +5,10 @@ import authRoutes from './Routes/userRoutes.js'
 import expressHandlebars from "express-handlebars"
 import session from 'express-session'
 import {getListenings, getListeningById, getMyListening} from "./Loaders/listenLoader.js"
+import {getAllReview, getReview} from "./Loaders/reviewLoader.js"
 import {getUser} from "./Loaders/userLoader.js"
-//import path from 'path'
-
-
-//const __dirname = path.resolve();
+import {Server} from 'socket.io';
+import {addChat, getChat} from "./Controllers/chatcontrol.js"
 
 const handlebars = expressHandlebars.create({
     defaultLayout: 'main',
@@ -21,6 +20,11 @@ const PORT = process.env.PORT ?? 8080
 
 //assigning the variable app to express
 const app = express()
+
+const server = app.listen(3000, () => {
+});
+
+const io = new Server(server);
 
 app.engine('hbs', handlebars.engine)
 app.set('view engine', 'hbs')
@@ -96,17 +100,21 @@ app.get('/listening/:id', async (req, res) => {
 })
 
 app.get('/edit/listening/:id', async (req, res) => {
-    await getListeningById(req.params.id)
-        .then(result => {
-            res.render('listenings/editListnening', {
-                listening: result
+    if (req.session.login)
+        await getListeningById(req.params.id)
+            .then(result => {
+                res.render('listenings/editListnening', {
+                    listening: result
+                })
             })
-        })
+    else
+        res.redirect('/auth')
 })
 
 app.get('/exit', (req, res, next) => {
     req.session.authorized = false
-    req.session.user = null
+    //req.session.user = null
+    req.session.login = null
     req.session.save(err => {
         if (err) next(err)
         // regenerate the session, which is good practice to help
@@ -120,61 +128,109 @@ app.get('/exit', (req, res, next) => {
 
 app.get('/profile/:id', async (req, res) => {
     await getUser(req.params.id)
-        .then(result => {
+        .then(async result => {
             if (result == null) {
                 res.render("notExistingPage.hbs")
-            } else {
-                for (const key in result.dataValues) {
-                    if (result.dataValues[key])
-                        result.dataValues[key] = result.dataValues[key].trim()
-                }
-                res.render('profile/viewProfile', {
-                    user: result.dataValues,
-                    authorized: req.session.authorized,
-                    isMyProfile: req.params.id === req.session.login
-                })
+                return
             }
-        })
+            await getReview(req.session.login, req.params.id)
+                .then(async canReview => {
+                    for (const key in result.dataValues)
+                        if (result.dataValues[key])
+                            result.dataValues[key] = result.dataValues[key].trim()
 
+                    canReview = canReview == null && req.session.login !== undefined
+                    await getAllReview(req.params.id)
+                        .then(async reviews => {
+                            await getMyListening(req.params.id)
+                                .then(listenings => {
+                                    const context = {
+                                        listenings: listenings.map(document => {
+                                            return {
+                                                name: document.name,
+                                                date: document.date,
+                                                id: document.id,
+                                            }
+                                        }),
+                                        reviews: reviews.map(document => {
+                                            return {
+                                                rate: document.rate,
+                                                comment: document.comment,
+                                                author: document.author,
+                                            }
+                                        })
+                                    }
+                                    res.render('profile/viewProfile', {
+                                        user: result.dataValues,
+                                        authorized: req.session.authorized,
+                                        isMyProfile: req.params.id === req.session.login,
+                                        canReview: canReview,
+                                        listenings: context.listenings,
+                                        reviews: context.reviews
+                                    })
+                                })
+                        })
+                })
+        })
+})
+
+app.get('/review/:id', async (req, res) => {
+    if (req.session.login)
+        await getUser(req.params.id)
+            .then(result => {
+                if (result == null) {
+                    res.render("notExistingPage.hbs")
+                    return
+                }
+
+                res.render('postReview', {
+                    target: result.dataValues.userLogin
+                })
+            })
+    else
+        res.redirect('/reg')
 })
 
 app.get('/edit/profile', async (req, res) => {
-    if (req.session.authorized)
+    if (req.session.login)
         await getUser(req.session.login)
             .then(result => {
-                for (const key in result.dataValues) {
+                for (const key in result.dataValues)
                     if (result.dataValues[key])
                         result.dataValues[key] = result.dataValues[key].trim()
-                }
+
                 res.render('profile/editProfile', {
                     user: result.dataValues
                 })
             })
     else
-        res.redirect('/auth')
+        res.redirect('/reg')
 })
 
 app.get('/myListenings', async (req, res) => {
-    await getMyListening(req.session.login)
-        .then(result => {
-            if (result !== undefined) {
-                const context = {
-                    listenings: result.map(document => {
-                        return {
-                            name: document.name,
-                            date: document.date,
-                            id: document.id,
-                        }
-                    })
-                }
+    if (req.session.login)
+        await getMyListening(req.session.login)
+            .then(result => {
+                if (result !== undefined) {
+                    const context = {
+                        listenings: result.map(document => {
+                            return {
+                                name: document.name,
+                                date: document.date,
+                                id: document.id,
+                            }
+                        })
+                    }
 
-                res.render('listenings/myListenings', {
-                    listenings: context.listenings,
-                })
-            } else {
-                res.render('listenings/myListenings')
-            }
-        })
+                    res.render('listenings/myListenings', {
+                        listenings: context.listenings,
+                    })
+                } else {
+                    res.render('listenings/myListenings')
+                }
+            })
+    else
+        res.redirect('/reg')
 })
 
 app.get('/reg', (req, res) => {
@@ -182,15 +238,75 @@ app.get('/reg', (req, res) => {
 })
 
 app.get('/myProfile', (req, res) => {
-    res.redirect('/profile/' + req.session.login)
+    if (req.session.login)
+        res.redirect('/profile/' + req.session.login)
+    else
+        res.redirect('/reg')
 })
 
 app.get('/postListening', (req, res) => {
-    res.render('listenings/postListening')
+    if (req.session.login)
+        res.render('listenings/postListening')
+    else
+        res.redirect('/reg')
 })
 
 app.get('*', (req, res) => {
     res.status(404).render("notExistingPage")
+})
+
+let sender;
+let receiver;
+io.on('connection', async (socket) => {
+    console.log('user connected');
+
+    async function get_content() {
+        socket.emit("clear");
+        const content = await getChat(sender, receiver);
+        if (content != null) {
+            for (let i = 0; content.length > i; i += 1) {
+                let msg = {sender: content[i].sender, mess: content[i].message};
+                socket.emit("add mess", msg);
+            }
+        }
+    }
+
+    async function reload() {
+        setTimeout(get_content, 1000);
+        setTimeout(reload, 5000);
+    }
+
+    setTimeout(reload, 1);
+
+    socket.on('send mess', async (msg) => {
+        await addChat(msg.sender, msg.receiver, msg.mess);
+        socket.emit('add mess', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+});
+
+app.use('/chat/:id', (req, res) => {
+    if (req.session.login) {
+        if (req.rawHeaders[1] !== "localhost:3000") {
+            res.redirect("http://localhost:3000/chat/" + (req.body.owner).toString());
+        } else {
+            sender = req.session.login;
+            receiver = req.params.id;
+            if (sender !== receiver & sender != null && receiver != null) {
+                res.render("chat", {
+                    name: sender,
+                    receiver: receiver
+                });
+            } else {
+                res.render("notExistingPage");
+            }
+        }
+    } else
+        res.redirect('/reg')
 })
 
 //listening to server connection

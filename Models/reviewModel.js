@@ -1,11 +1,12 @@
 import {DataTypes} from 'sequelize'
 import db from './database.js'
 
-export default db.define("review", {
+export default db.define("reviews", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true
     },
     rate: {
         type: DataTypes.SMALLINT,

@@ -129,11 +129,31 @@
                         </form>
                     {{/if}}
                 {{/if}}
+                {{#unless isMyProfile}}
+                    {{#if canReview}}
+                        <div class="mt-5 text-center">
+                            <button class="btn btn-primary profile-button" type="button"
+                                    onclick="document.location = '/review/{{user.userLogin}}'">Оставить отзыв
+                            </button>
+                        </div>
+                    {{/if}}
+                {{/unless}}
+                <ul className="ads-list">Отзывы о пользователе
+                    {{#each reviews}}
+                        <li><a href="/profile/{{this.author}}">{{this.author}}</a> mark: {{this.rate}}
+                            text: {{this.comment}}</li>
+                    {{/each}}
+                    {{#unless reviews}}
+                        <p>еще никто не оставил отзывов!</p>
+                    {{/unless}}
+                </ul>
                 <ul className="ads-list">Список объявлений
                     {{#each listenings}}
                         <li><a href="/listening/{{this.id}}">name: {{this.name}} date: {{this.date}}</a></li>
-                    {{#unless isMyProfile}}<button>Оставить отзыв</button>{{/unless}}
                     {{/each}}
+                    {{#unless listenings}}
+                        <p>нет объявлений!</p>
+                    {{/unless}}
                 </ul>
             </div>
         </div>

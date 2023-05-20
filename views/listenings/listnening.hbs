@@ -11,3 +11,7 @@
     <li>статус объявления: {{listening.status}}</li>
     <li>desc: {{listening.desc}}</li>
 </ul>
+<form action="/chat/{{listening.owner}}" method="post" name="chat">
+    <input name="owner" type="hidden" value="{{listening.owner}}">
+    <button type="submit">Перейти в чат</button>
+</form>
