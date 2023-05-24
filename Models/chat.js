@@ -1,4 +1,4 @@
-import {DataTypes} from 'sequelize'
+import {DataTypes, Sequelize} from 'sequelize'
 import db from './database.js'
 
 
@@ -30,3 +30,10 @@ export default db.define("Chats", {
         timestamps: false,
     }
 )
+
+
+
+
+
+
+

@@ -1,6 +1,7 @@
 import chat from "../Models/chat.js";
 
 
+
 export async function addChat(sender,receiver,message){
     try {
         await chat.create({
@@ -16,15 +17,16 @@ export async function addChat(sender,receiver,message){
 
 
 export async function getChat(sender,receiver){
-    if(sender != null  && receiver != null)
+    if(sender != null  & receiver != null)
     {
         try {
-            return await chat.findAll({
+            const content = await chat.findAll({
                 where: {
-                    sender: [sender, receiver],
-                    receiver: [receiver, sender],
+                    sender: [sender , receiver],
+                    receiver: [receiver , sender],
                 },
-            });
+            })
+            return content;
         } catch (e) {
             console.log(e)
         }
